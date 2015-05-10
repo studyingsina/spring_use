@@ -52,7 +52,7 @@ public class SingletonRefPrototypeBeanTester {
 		logger.info("testSingleton......");
 		for (int i = 0; i < 3; i++) {
 			Company company = context.getBean("company", Company.class);
-			logger.info("Company is {}, instance {}", i, company.toString());
+			logger.info("Company is {}, instance {}, person {}", i, company.toString(), company.getPerson());
 		}
 	}
 
