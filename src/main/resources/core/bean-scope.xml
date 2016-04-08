@@ -14,6 +14,10 @@
 		<property name="person" ref="person" />
 	</bean>
 	
+	<bean id="companyTwo" class="com.studying.domain.Company">
+		<property name="person" ref="person" />
+	</bean>
+	
 	<bean id="companyProvider" class="com.studying.domain.CompanyProvider" />
 	
 	<bean id="companyAware" class="com.studying.domain.CompanyAware" />

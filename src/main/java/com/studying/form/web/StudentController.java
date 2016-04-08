@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2010-2015 meituan.com
- * All rights reserved.
- * 酒店后台研发.
- */
 package com.studying.form.web;
 
 import org.springframework.stereotype.Controller;
@@ -19,7 +14,6 @@ import com.studying.form.domain.Student;
 /**
  * Desc
  * 
- * @author: zhangjunwei@meituan.com
  * @Date: 2015年2月14日
  */
 @Controller

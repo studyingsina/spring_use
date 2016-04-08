@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2010-2015 meituan.com
- * All rights reserved.
- * 酒店后台研发.
- */
 package com.studying.core.scope;
 
 import org.junit.Before;
@@ -24,7 +19,6 @@ import com.studying.domain.Person;
  * how-to-do-spring-lookup-method-injection-with-annotations</a><br />
  * <a href="https://jira.spring.io/browse/SPR-5192">lookupmethod</a><br />
  * <a href="http://docs.spring.io/spring/docs/2.5.x/reference/beans.html#beans-factory-method-injection">Method Injection</a>
- * @author: zhangjunwei@meituan.com
  * @Date: 2015年3月21日
  */
 public class SingletonRefPrototypeBeanTester {
@@ -38,7 +32,7 @@ public class SingletonRefPrototypeBeanTester {
 		context = new ClassPathXmlApplicationContext("core/bean-scope.xml");
 	}
 
-	@Test
+//	@Test
 	public void testPrototype() {
 		logger.info("testPrototype......");
 		for (int i = 0; i < 3; i++) {
@@ -47,7 +41,7 @@ public class SingletonRefPrototypeBeanTester {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testSingleton() {
 		logger.info("testSingleton......");
 		for (int i = 0; i < 3; i++) {
@@ -62,10 +56,12 @@ public class SingletonRefPrototypeBeanTester {
 		for (int i = 0; i < 3; i++) {
 			Company company = context.getBean("company", Company.class);
 			logger.info("Company is {},company instance {}, person instance {}", i, company, company.getPerson());
+			Company companyTwo = context.getBean("companyTwo", Company.class);
+			logger.info("companyTwo is {},company instance {}, person instance {}", i, companyTwo, companyTwo.getPerson());
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSingletonRefProtype02(){
 		logger.info("testSingletonRefProtype02......");
 		for (int i = 0; i < 3; i++) {
@@ -74,7 +70,7 @@ public class SingletonRefPrototypeBeanTester {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSingletonRefProtype03(){
 		logger.info("testSingletonRefProtype03......");
 		for(int i = 0; i < 3; i++){
@@ -83,7 +79,7 @@ public class SingletonRefPrototypeBeanTester {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSingletonRefProtype04(){
 		logger.info("testSingletonRefProtype04......");
 		for(int i = 0; i < 3; i++){
@@ -92,7 +88,7 @@ public class SingletonRefPrototypeBeanTester {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSingletonRefProtype05(){
 		logger.info("testSingletonRefProtype05......");
 		for(int i = 0; i < 3; i++){

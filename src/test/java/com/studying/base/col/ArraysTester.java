@@ -1,21 +1,17 @@
-/**
- * Copyright (c) 2010-2015 meituan.com
- * All rights reserved.
- * 酒店后台研发.
- */
 package com.studying.base.col;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 
 /**
  * Desc
  * 
- * @author: zhangjunwei@meituan.com
  * @Date: 2015年3月26日
  */
 public class ArraysTester {
@@ -44,7 +40,7 @@ public class ArraysTester {
 
 	}
 	
-	@Test
+//	@Test
 	public void testString(){
 		String[] iVersion = {"5.5", "3.6", "4.2", "5.4"};
 		Arrays.sort(iVersion);
@@ -66,5 +62,11 @@ public class ArraysTester {
 		System.out.println("insetion one:" + Collections.binarySearch(lVersion, "176"));
 		System.out.println("insetion two:" + Collections.binarySearch(lVersion, "10"));
 		System.out.println("insetion three:" + Collections.binarySearch(lVersion, "240"));
+	}
+	
+	@Test
+	public void testTime(){
+		ConfigurationClassPostProcessor p = null;
+		System.out.println(new Date(1431766796000L));
 	}
 }
