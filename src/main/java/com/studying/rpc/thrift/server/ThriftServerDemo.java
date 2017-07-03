@@ -44,8 +44,8 @@ public class ThriftServerDemo {
 
     public static boolean start() {
         try {
-             createNonblockingServer();
-//            createMockServer();
+//             createNonblockingServer();
+            createMockServer();
         } catch (Exception e) {
             System.out.println("start server error!" + e);
             return false;

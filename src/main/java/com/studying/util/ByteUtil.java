@@ -12,9 +12,14 @@ public class ByteUtil {
 
     private static Logger logger = LoggerFactory.getLogger(ByteUtil.class);
 
-    public static String bToS() throws Exception {
+    public static byte[] getInitBytes() {
         byte[] ret = new byte[]{-128, 1, 0, 2, 0, 0, 0, 6, 103, 101, 116, 83, 116, 114, 0, 0, 0, 1, 12, 0, 0, 11, 0, 2, 0, 0, 0, 10, 116,
-                101, 115, 116, 49, 116, 101, 115, 116, 50, 0, 0, 0};
+                101, 115, 116, 49, 116, 101, 115, 116, 50, 0, 0};
+        return ret;
+    }
+
+    public static String bToS() throws Exception {
+        byte[] ret = getInitBytes();
         String str = new String(ret, "ISO-8859-1");
         logger.info("byteToString:[{}]", str);
         return str;

@@ -1,20 +1,22 @@
 package com.studying.rpc.thrift.mock;
 
 import com.google.common.collect.Maps;
-import org.apache.thrift.ProcessFunction;
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
+import com.studying.util.ByteUtil;
+import org.apache.thrift.*;
 import org.apache.thrift.protocol.*;
+import org.apache.thrift.transport.TFramedTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
  * Created by junweizhang on 17/7/2.
  */
-public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
+public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift
+        .TProcessor {
 
     private Logger logger = LoggerFactory.getLogger(MockServiceImpl.class);
 
@@ -43,7 +45,8 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
 //        if (fn == null) {
 //            TProtocolUtil.skip(in, TType.STRUCT);
 //            in.readMessageEnd();
-//            TApplicationException x = new TApplicationException(TApplicationException.UNKNOWN_METHOD, "Invalid method name: '"+msg.name+"'");
+//            TApplicationException x = new TApplicationException(TApplicationException.UNKNOWN_METHOD, "Invalid method name: '"+msg
+// .name+"'");
 //            out.writeMessageBegin(new TMessage(msg.name, TMessageType.EXCEPTION, msg.seqid));
 //            x.write(out);
 //            out.writeMessageEnd();
@@ -79,13 +82,14 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
             }
             iprot.readMessageEnd();
             TBase result = getResult(iface, args);
-            oprot.writeMessageBegin(new TMessage(getMethodName(), TMessageType.REPLY, seqid));
+//            oprot.writeMessageBegin(new TMessage(getMethodName(), TMessageType.REPLY, seqid));
             result.write(oprot);
-            oprot.writeMessageEnd();
+//            oprot.writeMessageEnd();
             oprot.getTransport().flush();
             /**
              * mock byte[]
-             * new byte[]{-128,1,0,2,0,0,0,6,103,101,116,83,116,114,0,0,0,1,12,0,0,11,0,2,0,0,0,10,116,101,115,116,49,116,101,115,116,50,0,0,0}
+             * new byte[]{-128,1,0,2,0,0,0,6,103,101,116,83,116,114,0,0,0,1,12,0,0,11,0,2,0,0,0,10,116,101,115,116,49,116,101,115,116,50,
+             * 0,0,0}
              */
         }
 
@@ -106,18 +110,33 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
 
         @Override
         public void read(TProtocol tProtocol) throws TException {
-           logger.info("read...");
+            logger.info("read...");
         }
 
         @Override
         public void write(TProtocol oprot) throws TException {
-            logger.info("write...");
-            oprot.writeStructBegin(new TStruct("MockResult"));
-            oprot.writeFieldBegin(new TField("value", org.apache.thrift.protocol.TType.STRING, (short)2));
-            oprot.writeString("write mock test...");
-            oprot.writeFieldEnd();
-            oprot.writeFieldStop();
-            oprot.writeStructEnd();
+            try {
+                logger.info("write...");
+//                oprot.writeStructBegin(new TStruct("MockResult"));
+//                oprot.writeFieldBegin(new TField("value", org.apache.thrift.protocol.TType.STRING, (short) 2));
+//                oprot.writeString("write mock test...");
+//                oprot.writeFieldEnd();
+//                oprot.writeFieldStop();
+//                oprot.writeStructEnd();
+                // ResultStr resultStr = new ResultStr();
+                TFramedTransport transport = (TFramedTransport) oprot.getTransport();
+                Field writeBuffer = ReflectionUtils.findField(TFramedTransport.class, "writeBuffer_");
+                logger.info("writeBuffer : {}, accessable : {}", writeBuffer, writeBuffer.isAccessible());
+                ReflectionUtils.makeAccessible(writeBuffer);
+                logger.info("accessable : {}", writeBuffer.isAccessible());
+                TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(transport);
+                logger.info("outputStream : {}", outputStream);
+                outputStream.reset();
+                byte[] bytes = ByteUtil.getInitBytes();
+                outputStream.write(bytes);
+            } catch (Exception e) {
+                logger.error("write error", e);
+            }
         }
 
         @Override

@@ -2,3 +2,7 @@
 .classpath
 .project
 .settings/org.eclipse.jdt.core.prefs
+.idea
+.settings/
+springmvc.iml
+.idea/libraries/Maven__org_apache_thrift_libthrift_0_8_0.xml

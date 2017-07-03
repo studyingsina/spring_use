@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class TestThriftService {
+public class TestThriftService{
 
   public interface Iface {
 
