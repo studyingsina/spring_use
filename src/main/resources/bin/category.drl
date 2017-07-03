@@ -1,0 +1,130 @@
+// 订单分类-普通当日
+rule "订单分类-普通当日-订单种类"
+    when
+        // order : Order(type = ZL)
+    then
+        // 积分+1
+end
+
+rule "订单分类-普通当日-到店日"
+    when
+        // order : Order(day == current)
+    then
+        // 积分+1
+end
+
+// 规则...
+
+// MetaData orderType day 预订时间 userLevel partnerid poiid hotelstar
+// values   [1,2,3,4]
+
+// 元数据配置,定义业务线,业务线下的分类模版,模板下的条件,条件关联的字段,
+
+普通分类-
+
+/**
+业务线:[id, name, desc]
+    1,hotel,酒店
+    2,trip,旅游
+
+业务类型:[id, name, desc, biz]
+    1,hotelYF,预付,hotel
+    2,hotelZL,直连,hotel
+    3,second,二次预约,trip
+
+分类:[id, name, desc, biz, subBiz, conditionList, valid]
+    1,normal,普通当日,hotel,yf,ordertype contains yf&zl,day = current,1;
+
+分类组成条件:[id, attr_name, operator, value]
+    orderType int [yf,zl]
+    userLevel int > 3
+
+条件:[id, name, operator, value, cate]
+    1,orderType,contain,[yf,zl],1
+    2,userLevel,greater,3,1
+
+
+属性表:[id, name, desc, value, biz, display, javatype]
+    1,orderType,订单种类,all-yf-zl-yd-group,common,checkbox,int
+    2,toDay,到店日,all-current-tommorrow,hotel,checkbox,enum
+
+
+展示:[id, name, desc]
+    1, text, 文本框
+    2, select, 下拉框
+    3, checkbox, 复选框
+
+---------------------------------------------------------------------
+class Category{
+    List<Condition> conditions;
+    Action act;
+}
+
+class Condition{
+    Property:orderType
+    operator:contain
+    values:[yf,zl,group]
+}
+
+class Action{
+    name:calculateTime
+    desc:计算调配时间 承诺时间
+}
+
+class Property{
+    name:orderType
+    type:int
+    desc:订单类型
+}
+
+// 匹配订单属性
+Category matchCategory(Order, Category[]){
+    for Category[]:
+        List<Condition> conditions = cat.getConditions()
+        for conditions:
+            property, operator, values
+            value = method.invoke(order, getOrderType) // order.getOrderType()
+            // 条件判断
+            if (values[yf,zl,group] contains value[yf]) :
+                cat.matched = true
+            else :
+                cat.matched = false
+                break
+}
+
+Order(orderType,userLevel)--Categories(orderType,userLevel),Cate02(hotelStar,partnerId)
+
+
+
+List<String>  orderType int [yf,zl]
+              userLevel int > 3
+
+rule = condition + action
+condition = property + operator + value
+
+category
+    condition1
+    condition2
+    condition3
+
+orderType is yf
+poilevel is A
+userlevel is 3
+action updateModel
+
+
+一个分类有多个属性,每个属性有多个值,
+来一个order,
+
+
+
+
+
+
+
+
+
+
+
+
+*/
