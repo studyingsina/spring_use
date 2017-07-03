@@ -1,6 +1,8 @@
 package com.studying.rpc.thrift.mock;
 
 import com.google.common.collect.Maps;
+import com.studying.rpc.thrift.stub.bean.ResultStr;
+import com.studying.rpc.thrift.stub.service.TestThriftService;
 import com.studying.util.ByteUtil;
 import org.apache.thrift.*;
 import org.apache.thrift.protocol.*;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -54,7 +57,7 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
 //            return true;
 //        }
 //        fn.process(msg.seqid, in, out, iface);
-        processFunction.process2(msg.seqid, in, out, mockService);
+        processFunction.process2(msg, in, out, mockService);
 
         return true;
     }
@@ -66,7 +69,7 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
             super("MockProcessFunction");
         }
 
-        public void process2(int seqid, TProtocol iprot, TProtocol oprot, I iface) throws TException {
+        public void process2(TMessage msg, TProtocol iprot, TProtocol oprot, I iface) throws TException {
             MockResult args = getEmptyArgsInstance();
             try {
                 // args.read(iprot);
@@ -74,22 +77,23 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
             } catch (TProtocolException e) {
                 iprot.readMessageEnd();
                 TApplicationException x = new TApplicationException(TApplicationException.PROTOCOL_ERROR, e.getMessage());
-                oprot.writeMessageBegin(new TMessage(getMethodName(), TMessageType.EXCEPTION, seqid));
+                oprot.writeMessageBegin(new TMessage(msg.name, TMessageType.EXCEPTION, msg.seqid));
                 x.write(oprot);
                 oprot.writeMessageEnd();
                 oprot.getTransport().flush();
                 return;
             }
             iprot.readMessageEnd();
-            TBase result = getResult(iface, args);
-//            oprot.writeMessageBegin(new TMessage(getMethodName(), TMessageType.REPLY, seqid));
-            result.write(oprot);
+//            TBase result = getResult(iface, args);
+//             oprot.writeMessageBegin(new TMessage(msg.name, TMessageType.REPLY, msg.seqid));
+            MockResult result = new MockResult();
+            result.write2(oprot, msg);
 //            oprot.writeMessageEnd();
             oprot.getTransport().flush();
             /**
              * mock byte[]
              * new byte[]{-128,1,0,2,0,0,0,6,103,101,116,83,116,114,0,0,0,1,12,0,0,11,0,2,0,0,0,10,116,101,115,116,49,116,101,115,116,50,
-             * 0,0,0}
+             * 0,0}
              */
         }
 
@@ -115,28 +119,102 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
 
         @Override
         public void write(TProtocol oprot) throws TException {
+
+        }
+
+        public void write2(TProtocol oprot, TMessage msg) throws TException {
             try {
                 logger.info("write...");
-//                oprot.writeStructBegin(new TStruct("MockResult"));
-//                oprot.writeFieldBegin(new TField("value", org.apache.thrift.protocol.TType.STRING, (short) 2));
-//                oprot.writeString("write mock test...");
-//                oprot.writeFieldEnd();
-//                oprot.writeFieldStop();
-//                oprot.writeStructEnd();
-                // ResultStr resultStr = new ResultStr();
-                TFramedTransport transport = (TFramedTransport) oprot.getTransport();
+//                mockGetStrResult(oprot);
+//                mockDiyGetStrResult(oprot);
+                mockDaynamicGetStrResult(oprot, msg);
+            } catch (Exception e) {
+                logger.error("write error", e);
+            }
+        }
+
+        private void mockData(){
+            TBase result = new TestThriftService.getStr_result();
+//            result.write();
+        }
+
+        private void mockDaynamicGetStrResult(TProtocol oprot, TMessage msg) throws TException {
+            try {
+                // mock result
+                TestThriftService.getStr_result getStr_result = new TestThriftService.getStr_result();
+                ResultStr resultStr = new ResultStr();
+                resultStr.setValue("mockDaynamicGetStrResult......");
+                getStr_result.setSuccess(resultStr);
+
+                TFramedTransport tFramedTransport = (TFramedTransport) new TFramedTransport.Factory().getTransport(null);
+                TBinaryProtocol tBinaryProtocol = (TBinaryProtocol) new TBinaryProtocol.Factory().getProtocol(tFramedTransport);
+                tBinaryProtocol.writeMessageBegin(new TMessage(msg.name, TMessageType.REPLY, msg.seqid));
+                getStr_result.write(tBinaryProtocol);
+
+                // refactor wirte buffer
                 Field writeBuffer = ReflectionUtils.findField(TFramedTransport.class, "writeBuffer_");
                 logger.info("writeBuffer : {}, accessable : {}", writeBuffer, writeBuffer.isAccessible());
                 ReflectionUtils.makeAccessible(writeBuffer);
                 logger.info("accessable : {}", writeBuffer.isAccessible());
-                TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(transport);
+                TByteArrayOutputStream fakeOutputStream = (TByteArrayOutputStream) writeBuffer.get(tFramedTransport);
+//                logger.info("outputStream : {}", outputStream);
+//                outputStream.reset();
+                byte[] bytes = fakeOutputStream.get();
+//                outputStream.write(bytes);
+
+                TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(oprot.getTransport());
                 logger.info("outputStream : {}", outputStream);
                 outputStream.reset();
-                byte[] bytes = ByteUtil.getInitBytes();
                 outputStream.write(bytes);
             } catch (Exception e) {
-                logger.error("write error", e);
+                logger.error("mockDaynamicGetStrResult error", e);
             }
+        }
+
+        private void mockDiyGetStrResult(TProtocol oprot) throws TException {
+            try {
+                // mock result
+                TestThriftService.getStr_result getStr_result = new TestThriftService.getStr_result();
+                ResultStr resultStr = new ResultStr();
+                resultStr.setValue("mockDiyGetStrResult......");
+                getStr_result.setSuccess(resultStr);
+//                TFramedTransport tFramedTransport = (TFramedTransport) new TFramedTransport.Factory().getTransport(null);
+//                TBinaryProtocol tBinaryProtocol = (TBinaryProtocol) new TBinaryProtocol.Factory().getProtocol(tFramedTransport);
+//                getStr_result.write(tBinaryProtocol);
+                getStr_result.write(oprot);
+
+                // refactor wirte buffer
+//                Field writeBuffer = ReflectionUtils.findField(TFramedTransport.class, "writeBuffer_");
+//                logger.info("writeBuffer : {}, accessable : {}", writeBuffer, writeBuffer.isAccessible());
+//                ReflectionUtils.makeAccessible(writeBuffer);
+//                logger.info("accessable : {}", writeBuffer.isAccessible());
+//                TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(tFramedTransport);
+//                logger.info("outputStream : {}", outputStream);
+//                outputStream.reset();
+//                byte[] bytes = ByteUtil.getInitBytes();
+//                outputStream.write(bytes);
+            } catch (Exception e) {
+                logger.error("testWriteBuffer error", e);
+            }
+        }
+
+        /**
+         * mock constant ret getStr Result.
+         * @param oprot
+         * @throws IllegalAccessException
+         * @throws IOException
+         */
+        private void mockGetStrResult(TProtocol oprot) throws IllegalAccessException, IOException {
+            TFramedTransport transport = (TFramedTransport) oprot.getTransport();
+            Field writeBuffer = ReflectionUtils.findField(TFramedTransport.class, "writeBuffer_");
+            logger.info("writeBuffer : {}, accessable : {}", writeBuffer, writeBuffer.isAccessible());
+            ReflectionUtils.makeAccessible(writeBuffer);
+            logger.info("accessable : {}", writeBuffer.isAccessible());
+            TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(transport);
+            // logger.info("outputStream : {}", outputStream);
+            outputStream.reset();
+            byte[] bytes = ByteUtil.getInitBytes();
+            outputStream.write(bytes);
         }
 
         @Override
