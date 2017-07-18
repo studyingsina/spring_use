@@ -140,7 +140,7 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
 
         private void mockDaynamicGetStrResult(TProtocol oprot, TMessage msg) throws TException {
             try {
-                // mock result
+                // 1. Mock返回数据,实际情况下Mock数据可以由Test Case通过HTTP接口传过来,Mock Server缓存.
                 TestThriftService.getStr_result getStr_result = new TestThriftService.getStr_result();
                 ResultStr resultStr = new ResultStr();
                 resultStr.setValue("mockDaynamicGetStrResult......");
@@ -151,17 +151,15 @@ public class MockTProcessor<I extends MockServiceIface> extends org.apache.thrif
                 tBinaryProtocol.writeMessageBegin(new TMessage(msg.name, TMessageType.REPLY, msg.seqid));
                 getStr_result.write(tBinaryProtocol);
 
-                // refactor wirte buffer
+                // 2. 获取到Transport中的 writeBuffer_
                 Field writeBuffer = ReflectionUtils.findField(TFramedTransport.class, "writeBuffer_");
                 logger.info("writeBuffer : {}, accessable : {}", writeBuffer, writeBuffer.isAccessible());
                 ReflectionUtils.makeAccessible(writeBuffer);
                 logger.info("accessable : {}", writeBuffer.isAccessible());
                 TByteArrayOutputStream fakeOutputStream = (TByteArrayOutputStream) writeBuffer.get(tFramedTransport);
-//                logger.info("outputStream : {}", outputStream);
-//                outputStream.reset();
                 byte[] bytes = fakeOutputStream.get();
-//                outputStream.write(bytes);
 
+                // 3. 偷梁换柱,将Mock Byte[] set到OutputStream中.
                 TByteArrayOutputStream outputStream = (TByteArrayOutputStream) writeBuffer.get(oprot.getTransport());
                 logger.info("outputStream : {}", outputStream);
                 outputStream.reset();
