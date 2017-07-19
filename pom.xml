@@ -225,11 +225,6 @@
             <version>0.8.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.cip.crane</groupId>
-            <artifactId>crane-client</artifactId>
-        </dependency>
-
     </dependencies>
     <build>
         <finalName>springmvc</finalName>
