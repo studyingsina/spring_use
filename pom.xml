@@ -10,7 +10,10 @@
     <properties>
         <org.springframework-version>4.1.1.RELEASE</org.springframework-version>
         <org.springframework-test-version>1.0.0.M2</org.springframework-test-version>
+        <logback-version>1.1.3</logback-version>
+        <slf4j-version>1.7.10</slf4j-version>
         <junit-version>4.10</junit-version>
+        <swift-version>0.23.1</swift-version>
     </properties>
 
     <dependencies>
@@ -100,20 +103,16 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-version}</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.10</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <version>${slf4j-version}</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -123,7 +122,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.7</version>
         </dependency>
         <!-- amq -->
         <dependency>
@@ -196,12 +195,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-tomcat-integration</artifactId>
             <version>6.5.0.Final</version>
@@ -225,6 +218,41 @@
             <version>0.8.0</version>
         </dependency>
 
+        <!-- swift -->
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-service</artifactId>
+            <version>${swift-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-codec</artifactId>
+            <version>${swift-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-annotations</artifactId>
+            <version>${swift-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-generator</artifactId>
+            <version>${swift-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-idl-parser</artifactId>
+            <version>${swift-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.swift</groupId>
+            <artifactId>swift-test-utils</artifactId>
+            <version>${swift-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
     </dependencies>
     <build>
         <finalName>springmvc</finalName>
@@ -233,12 +261,38 @@
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <!-- facebook swift -->
+            <plugin>
+                <groupId>com.facebook.mojo</groupId>
+                <artifactId>swift-maven-plugin</artifactId>
+                <version>${swift-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>false</skip>
+                    <idlFiles>
+                        <directory>${project.basedir}/src/main/java/com/studying/rpc/thrift/resources/</directory>
+                        <includes>
+                            <include>**/*.thrift</include>
+                        </includes>
+                    </idlFiles>
+                    <defaultPackage>${project.groupId}.thrift.swift</defaultPackage>
+                    <outputFolder>${project.basedir}/output</outputFolder>
                 </configuration>
             </plugin>
         </plugins>
