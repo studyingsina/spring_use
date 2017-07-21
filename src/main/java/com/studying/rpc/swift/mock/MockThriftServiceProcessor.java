@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.studying.util.LoggerUtil;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.thrift.TApplicationException;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.*;
@@ -91,8 +92,12 @@ public class MockThriftServiceProcessor implements NiftyProcessor {
             methodName = message.name;
             sequenceId = message.seqid;
 
-            // lookup method
-            ThriftMethodProcessor method = getMethods().get(methodName);
+            // lookup method TODO 此处用我们的Mock Method代替,并且将每次调用的参数传递下去
+            // ThriftMethodProcessor method = getMethods().get(methodName);
+            ThriftMethodProcessor method = getMethods().get("mockService");
+            FieldUtils.writeDeclaredField(method, "name", methodName, true);
+            FieldUtils.writeDeclaredField(method, "resultStructName", methodName + "_result", true);
+
             if (method == null) {
                 TProtocolUtil.skip(in, TType.STRUCT);
                 createAndWriteApplicationException(out, requestContext, methodName, sequenceId, UNKNOWN_METHOD, "Invalid method name: '"

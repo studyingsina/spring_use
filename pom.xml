@@ -286,7 +286,7 @@
                 <configuration>
                     <skip>false</skip>
                     <idlFiles>
-                        <directory>${project.basedir}/src/main/java/com/studying/rpc/thrift/resources/</directory>
+                        <directory>${project.basedir}/src/main/java/com/studying/rpc/swift/resources/</directory>
                         <includes>
                             <include>**/*.thrift</include>
                         </includes>

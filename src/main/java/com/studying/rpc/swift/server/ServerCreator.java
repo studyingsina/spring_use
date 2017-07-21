@@ -8,6 +8,7 @@ import com.facebook.swift.service.ThriftServer;
 import com.facebook.swift.service.ThriftServiceProcessor;
 import com.google.common.collect.ImmutableList;
 import com.studying.rpc.swift.TestThriftServiceV2Impl;
+import com.studying.rpc.swift.mock.MockServiceImpl;
 import com.studying.rpc.swift.mock.MockThriftServiceProcessor;
 import org.junit.Assert;
 
@@ -61,7 +62,7 @@ public class ServerCreator {
         MockThriftServiceProcessor processor = new MockThriftServiceProcessor(
                 new ThriftCodecManager(),
                 ImmutableList.<ThriftEventHandler>of(),
-                new TestThriftServiceV2Impl()
+                new MockServiceImpl()
         );
 
         taskWorkerExecutor = newFixedThreadPool(1);
