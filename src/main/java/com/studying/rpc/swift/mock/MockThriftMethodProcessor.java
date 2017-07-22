@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.studying.rpc.swift.client.ThriftClientV2Demo;
+import com.studying.rpc.swift.client.ClientMockUtil;
 import org.apache.thrift.TApplicationException;
 import org.apache.thrift.protocol.TMessage;
 import org.apache.thrift.protocol.TMessageType;
@@ -303,7 +303,7 @@ public class MockThriftMethodProcessor extends ThriftMethodProcessor {
         byte[] headerBytes = new byte[count];
         System.arraycopy(fakeBytes, 0, headerBytes, 0, count);
 
-        byte[] bodyBytes = ThriftClientV2Demo.mockResultBytes();
+        byte[] bodyBytes = ClientMockUtil.mockResultBytes();
 
         byte[] mockBytes = new byte[headerBytes.length + bodyBytes.length];
         System.arraycopy(headerBytes, 0, mockBytes, 0, headerBytes.length);
