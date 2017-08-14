@@ -12,8 +12,8 @@ public class ThriftServerV2Demo {
 
     public static void main(String[] args) {
 
-//        createServer();
-        createMockServer();
+        createServer();
+//        createMockServer();
         LoggerUtil.logger.info("server start ...");
 
         // serverCreator.stop();

@@ -1,13 +1,9 @@
 package com.studying.base.col;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+
+import java.util.*;
 
 /**
  * Desc
