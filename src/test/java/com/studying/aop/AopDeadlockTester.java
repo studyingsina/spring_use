@@ -17,7 +17,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * initialize the same aspect @see Operator, thread-1 will wait the lock when it get into getAspectInstance().
  *
  */
-public class AopTester {
+public class AopDeadlockTester {
 
     public static void main(String[] args) {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:core/bean-aop.xml");
