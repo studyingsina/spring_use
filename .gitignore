@@ -7,3 +7,5 @@
 springmvc.iml
 .idea/libraries/Maven__org_apache_thrift_libthrift_0_8_0.xml
 jetty.logs_IS_UNDEFINED/
+$wift.com.studying.rpc.swift.gen.ResultIntCodec.clas
+$wift.com.studying.rpc.swift.gen.ResultStrCodec.class

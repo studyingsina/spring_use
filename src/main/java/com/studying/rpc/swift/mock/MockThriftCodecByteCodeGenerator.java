@@ -123,7 +123,7 @@ public class MockThriftCodecByteCodeGenerator<T> {
         try {
             String fileName = codecType.getClassName().replace('/', '.') + ".class";
             IOUtils.write(byteCode, new FileOutputStream(fileName));
-        }catch (Exception e){
+        } catch (Exception e) {
             LoggerUtil.logger.error("generate class file error", e);
         }
 
