@@ -44,7 +44,7 @@ public class AopDeadlockTester {
         });
 
         t2.start();
-        t1.start();
+//        t1.start();
         LoggerUtil.logger.info("ctx instance : {}", ctx);
     }
 

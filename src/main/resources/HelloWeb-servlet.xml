@@ -30,7 +30,7 @@
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.studying.exception.SpringException">ExceptionPage</prop>
+				<prop key="com.studying.spring.exception.SpringException">ExceptionPage</prop>
 			</props>
 		</property>
 		<property name="defaultErrorView" value="error" />
