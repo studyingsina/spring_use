@@ -26,6 +26,11 @@
         <appender-ref ref="testLogger" />
     </logger>
 
+    <logger name="org.apache.http" additivity="false" level="DEBUG">
+        <appender-ref ref="console"/>
+        <appender-ref ref="testLogger" />
+    </logger>
+
     <root level="DEBUG">
         <appender-ref ref="console"/>
         <appender-ref ref="testLogger" />

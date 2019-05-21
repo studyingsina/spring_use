@@ -17,6 +17,11 @@
         <junit-version>4.10</junit-version>
         <swift-version>0.23.1</swift-version>
         <commons-io-version>2.5</commons-io-version>
+        <aviator-version>4.1.2</aviator-version>
+        <httpclient-version>4.5.6</httpclient-version>
+        <httpasyncclient-version>4.1.4</httpasyncclient-version>
+        <httpcore-version>4.4.10</httpcore-version>
+        <netty-all-version>4.1.36.Final</netty-all-version>
     </properties>
 
     <dependencies>
@@ -94,6 +99,16 @@
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.21.0-GA</version>
+        </dependency>
 
         <!-- jackson相关 -->
         <dependency>
@@ -168,6 +183,12 @@
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>3.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.zeromq</groupId>
@@ -274,7 +295,32 @@
             <version>${swift-version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+            <version>${aviator-version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>${httpasyncclient-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcore-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty-all-version}</version>
+        </dependency>
 
 
     </dependencies>
