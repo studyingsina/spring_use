@@ -21,17 +21,17 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="com.studying" additivity="false" level="DEBUG">
+    <logger name="com.studying" additivity="false" level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="testLogger" />
     </logger>
 
-    <logger name="org.apache.http" additivity="false" level="DEBUG">
+    <logger name="org.apache.http" additivity="false" level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="testLogger" />
     </logger>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="testLogger" />
     </root>

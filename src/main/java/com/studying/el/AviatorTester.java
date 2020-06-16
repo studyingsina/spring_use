@@ -15,7 +15,7 @@ public class AviatorTester {
 
     @Test
     public void testCal() {
-        Long result = (Long) AviatorEvaluator.execute("1+2+3");
+        Long result = (Long) AviatorEvaluator.execute("1+4+3");
         LoggerUtil.logger.info("result : {}", result);
         AviatorEvaluator.setOption(Options.TRACE_EVAL, true);
         result = (Long) AviatorEvaluator.execute("println('hello world'); 1+2+3 ; 100-1");

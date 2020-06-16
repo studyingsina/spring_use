@@ -5,10 +5,7 @@ import com.studying.util.LoggerUtil;
 import org.junit.Test;
 
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.URLEncoder;
+import java.net.*;
 
 /**
  * Created by junweizhang on 2019/5/14.
@@ -83,6 +80,7 @@ public class Socket4HttpTester {
             reader.close();
             writer.close();
             socket.close();
+
         } catch (Exception e) {
             LoggerUtil.logger.error("testPost error", e);
         }

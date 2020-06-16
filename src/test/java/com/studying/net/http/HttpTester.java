@@ -20,9 +20,9 @@ import java.util.Base64;
  */
 public class HttpTester {
 
-    public static final String TEST_HOST = "127.0.0.1";
-    public static final int TEST_PORT = 8080;
-    public static final String TEST_PATH = "/common/monitor/alive";
+    public static final String TEST_HOST = "";
+    public static final int TEST_PORT = 8415;
+    public static final String TEST_PATH = "";
     public static final String TEST_URL = String.format("http://%s:%s%s", TEST_HOST, TEST_PORT, TEST_PATH);
 
 
