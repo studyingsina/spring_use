@@ -42,81 +42,78 @@ public class BootstrapV1 {
     }
 
     /**
-     * 接收客户端的Socket,解析输入字节流,并返回结果.
-     *
-     * @throws Exception
+     * Demo版服务器处理逻辑:
+     * 1. 启动服务器监听端口,如8080
+     * 2. 开始监听客户端请求,如http请求
+     * 3. 解析http请求参数
+     * 4. 业务自己逻辑处理,如查询DB并返回数据
+     * 5. 将返回数据按http协议格式返回
      */
     private void process() throws Exception {
+        // 1. 服务端启动8080端口，并一直监听；
+        ServerSocket ss = new ServerSocket(8080);
+
         // 2. 监听到有客户端（比如浏览器）要请求http://localhost:8080/，那么建立连接，TCP三次握手；
         Socket socket = ss.accept();
         InputStream is = socket.getInputStream();
         OutputStream os = socket.getOutputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-        /**
-         * 3. 建立连接后，读取此次连接客户端传来的内容（其实就是解析网络字节流并按HTTP协议去解析）；
-         * GET /dir1/dir2/file.html HTTP/1.1
-         */
+        // 3. 建立连接后，读取此次连接客户端传来的内容（其实就是解析网络字节流并按HTTP协议去解析）；
+        // GET /app/user HTTP/1.1
         String requestLine = reader.readLine();
         Logs.SERVER.info("requestLine is : {}", requestLine);
         if (requestLine == null || requestLine.length() < 1) {
             Logs.SERVER.error("could not read request");
             return;
         }
-
         String[] tokens = requestLine.split(" ");
         String method = tokens[0];
         String urlPath = tokens[1];
-        File requestedFile = docRoot;
 
-        // http://127.0.0.1:8080/app/upper?name=apple
+        // 4. 业务逻辑：组装给客户端的返回数据,如查DB
+        String content = "服务端返回数据...";
+
+        // 5. 找到资源后，再通过网络流将内容输出，当然，还是按照HTTP协议去输出，这样客户端（浏览器）就能正常渲染、显示网页内容；
         BufferedOutputStream bos = new BufferedOutputStream(os);
-        if (urlPath.startsWith("/app/upper")) {
-            Logs.SERVER.info("return upper json content");
-            if (urlPath.contains("?")) {
-                String[] paths = urlPath.split("\\?")[1].split("=");
-                String param = paths[0];
-                String value = paths[1];
-                String content = String.format("{\"%s\":\"%s\",\"%s\":\"%s\"}", param, value, "upper",
-                        value.toUpperCase());
-                byte[] headerBytes = createJsonHeaderBytes("HTTP/1.1 200 OK", content.length(),
-                        "application/json;charset=utf-8");
-                // Transfer-Encoding: chunked
-                bos.write(headerBytes);
-                bos.write(content.getBytes());
-            }
-        } else if (!urlPath.startsWith("/app/upper")) {
-            String[] paths = urlPath.split("/");
-            for (String path : paths) {
-                requestedFile = new File(requestedFile, path);
-            }
-            if (requestedFile.exists() && requestedFile.isDirectory()) {
-                requestedFile = new File(requestedFile, "index.html");
-            }
+        int len = content.length();
+        byte[] headerBytes = createHeaderBytes("HTTP/1.1 200 OK", len, "application/json;charset=utf-8");
+        bos.write(headerBytes);
+        byte[] buf = new byte[2000];
+        bos.write(buf, 0, buf.length);
+        bos.flush();
+        socket.close();
 
-            // 4. 解析到请求路径（比如此处是根路径），那么去根路径下找资源（比如此处是index.html文件）；
-            if (requestedFile.exists()) {
-                Logs.SERVER.info("return 200 ok");
-                long length = requestedFile.length();
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(requestedFile));
-                String contentType = URLConnection.guessContentTypeFromStream(bis);
-                byte[] headerBytes = createHeaderBytes("HTTP/1.1 200 OK", length, contentType);
-                bos.write(headerBytes);
+        String[] paths = urlPath.split("/");
+        for (String path : paths) {
+            requestedFile = new File(requestedFile, path);
+        }
+        if (requestedFile.exists() && requestedFile.isDirectory()) {
+            requestedFile = new File(requestedFile, "index.html");
+        }
 
-                // 5. 找到资源后，再通过网络流将内容输出，当然，还是按照HTTP协议去输出，这样客户端（浏览器）就能正常渲染、显示网页内容；
-                byte[] buf = new byte[2000];
-                int blockLen;
-                while ((blockLen = bis.read(buf)) != -1) {
-                    bos.write(buf, 0, blockLen);
-                }
-                bis.close();
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        // 4. 解析到请求路径（比如此处是根路径），那么去根路径下找资源（比如此处是index.html文件）；
+        if (requestedFile.exists()) {
+            Logs.SERVER.info("return 200 ok");
+            long length = requestedFile.length();
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(requestedFile));
+            String contentType = URLConnection.guessContentTypeFromStream(bis);
+            byte[] headerBytes = createHeaderBytes("HTTP/1.1 200 OK", length, contentType);
+            bos.write(headerBytes);
+
+            // 5. 找到资源后，再通过网络流将内容输出，当然，还是按照HTTP协议去输出，这样客户端（浏览器）就能正常渲染、显示网页内容；
+            byte[] buf = new byte[2000];
+            int blockLen;
+            while ((blockLen = bis.read(buf)) != -1) {
+                bos.write(buf, 0, blockLen);
             }
+            bis.close();
         } else {
             Logs.SERVER.info("return 404 not found");
             byte[] headerBytes = createHeaderBytes("HTTP/1.0 404 Not Found", -1, null);
             bos.write(headerBytes);
         }
-
         bos.flush();
         socket.close();
     }
@@ -133,39 +130,11 @@ public class BootstrapV1 {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(baos));
         bw.write(content + "\r\n");
-
         if (length > 0) {
             bw.write("Content-Length: " + length + "\r\n");
         }
         if (contentType != null) {
             bw.write("Content-Type: " + contentType + "\r\n");
-        }
-        if(contentType.contains("json")){
-            bw.write("Transfer-Encoding: chunked" + "\r\n");
-        }
-        bw.write("\r\n");
-        bw.flush();
-        byte[] data = baos.toByteArray();
-        bw.close();
-        return data;
-    }
-
-    /**
-     * 生成HTTP Response头.
-     *
-     * @param content
-     * @param length
-     * @param contentType
-     * @return
-     */
-    private byte[] createJsonHeaderBytes(String content, long length, String contentType) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(baos));
-        if (contentType != null) {
-            bw.write("Content-Type: " + contentType + "\r\n");
-        }
-        if(contentType.contains("json")){
-            bw.write("Transfer-Encoding: chunked" + "\r\n");
         }
         bw.write("\r\n");
         bw.flush();
