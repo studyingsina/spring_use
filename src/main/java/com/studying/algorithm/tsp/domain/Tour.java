@@ -8,20 +8,20 @@ public class Tour{
     // Holds our tour of cities
     private ArrayList tour = new ArrayList<City>();
     // Cache
+    private double fitness = 0;
     private int distance = 0;
-    
+
     // Constructs a blank tour
     public Tour(){
         for (int i = 0; i < TourManager.numberOfCities(); i++) {
             tour.add(null);
         }
     }
-    
-    // Constructs a tour from another tour
+
     public Tour(ArrayList tour){
-        this.tour = (ArrayList) tour.clone();
+        this.tour = tour;
     }
-    
+
     // Returns tour information
     public ArrayList getTour(){
         return tour;
@@ -31,7 +31,7 @@ public class Tour{
     public void generateIndividual() {
         // Loop through all our destination cities and add them to our tour
         for (int cityIndex = 0; cityIndex < TourManager.numberOfCities(); cityIndex++) {
-          setCity(cityIndex, TourManager.getCity(cityIndex));
+            setCity(cityIndex, TourManager.getCity(cityIndex));
         }
         // Randomly reorder the tour
         Collections.shuffle(tour);
@@ -46,18 +46,27 @@ public class Tour{
     public void setCity(int tourPosition, City city) {
         tour.set(tourPosition, city);
         // If the tours been altered we need to reset the fitness and distance
+        fitness = 0;
         distance = 0;
     }
-    
+
+    // Gets the tours fitness
+    public double getFitness() {
+        if (fitness == 0) {
+            fitness = 1/(double)getDistance();
+        }
+        return fitness;
+    }
+
     // Gets the total distance of the tour
     public int getDistance(){
         if (distance == 0) {
             int tourDistance = 0;
             // Loop through our tour's cities
             for (int cityIndex=0; cityIndex < tourSize(); cityIndex++) {
-                // Get city we're traveling from
+                // Get city we're travelling from
                 City fromCity = getCity(cityIndex);
-                // City we're traveling to
+                // City we're travelling to
                 City destinationCity;
                 // Check we're not on our tour's last city, if we are set our
                 // tour's final destination city to our starting city
@@ -79,7 +88,12 @@ public class Tour{
     public int tourSize() {
         return tour.size();
     }
-    
+
+    // Check if the tour contains a city
+    public boolean containsCity(City city){
+        return tour.contains(city);
+    }
+
     @Override
     public String toString() {
         String geneString = "|";
