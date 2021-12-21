@@ -83,39 +83,6 @@ public class BootstrapV1 {
         bos.write(buf, 0, buf.length);
         bos.flush();
         socket.close();
-
-        String[] paths = urlPath.split("/");
-        for (String path : paths) {
-            requestedFile = new File(requestedFile, path);
-        }
-        if (requestedFile.exists() && requestedFile.isDirectory()) {
-            requestedFile = new File(requestedFile, "index.html");
-        }
-
-        BufferedOutputStream bos = new BufferedOutputStream(os);
-        // 4. 解析到请求路径（比如此处是根路径），那么去根路径下找资源（比如此处是index.html文件）；
-        if (requestedFile.exists()) {
-            Logs.SERVER.info("return 200 ok");
-            long length = requestedFile.length();
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(requestedFile));
-            String contentType = URLConnection.guessContentTypeFromStream(bis);
-            byte[] headerBytes = createHeaderBytes("HTTP/1.1 200 OK", length, contentType);
-            bos.write(headerBytes);
-
-            // 5. 找到资源后，再通过网络流将内容输出，当然，还是按照HTTP协议去输出，这样客户端（浏览器）就能正常渲染、显示网页内容；
-            byte[] buf = new byte[2000];
-            int blockLen;
-            while ((blockLen = bis.read(buf)) != -1) {
-                bos.write(buf, 0, blockLen);
-            }
-            bis.close();
-        } else {
-            Logs.SERVER.info("return 404 not found");
-            byte[] headerBytes = createHeaderBytes("HTTP/1.0 404 Not Found", -1, null);
-            bos.write(headerBytes);
-        }
-        bos.flush();
-        socket.close();
     }
 
     /**
